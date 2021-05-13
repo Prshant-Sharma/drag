@@ -344,7 +344,7 @@ function Drag() {
       <div className="UploadCt">
         <Dropzone
           fileData={(file, error) => fileData(file, items, error)}
-          // removeAllFile = {!state.files.length}
+          removeAllFile = {!state.files.length}
           FileError={(err) => fileError(err)}
           removeFile={(file) => removeFile(file)}
           zipFileUpload={(zipFileName , files) => setState({ filename: [{ uploadedFilename: zipFileName, file: files[0] }] , files })}
@@ -369,7 +369,7 @@ function Drag() {
   }
 
   const fileError = (err) => {
-    setState({ fileErrorMsg: err });
+    setState({...state, fileErrorMsg: err });
   };
 
   const removeFile = (file) => {
@@ -379,15 +379,13 @@ function Drag() {
     // console.log(filename,"Filename")
     if (files && !files.length)
       fileError("A file or zip file is mandatory.");
-    setState({ filename, files, rescanIntervaporId: undefined , rescan: false});
+    setState({...state, filename, files, rescanIntervaporId: undefined , rescan: false});
   };
 
   const fileData = (file, formData, error) => {
     let noErrors = true;
     setState(
-      {
-        // errors,
-        // errorMessages,
+      {...state,
         files: file,
         fileErrorMsg: error ? error : "",
         saveButtonDisabled: error,
@@ -414,7 +412,7 @@ function Drag() {
         }
       } else {
         let message = res.error ? res.error.message : res.message;
-        setState({
+        setState({...state,
           open: true,
           severity: "error",
           alertmsg: message,
@@ -427,7 +425,7 @@ function Drag() {
       }
     })
     .catch((error) => {
-      setState({
+      setState({...state,
         open: true,
         severity: "error",
         alertmsg: error.message,
@@ -442,7 +440,7 @@ function Drag() {
   const cancelFileUpload = (e) => {
     controller.abort();
     setState((prevState) => {
-      return { files: [], filename: null, saveButtonDisabled: false };
+      return {...state, files: [], filename: null, saveButtonDisabled: false };
     });
   };
 
@@ -470,7 +468,7 @@ function Drag() {
         // },
       signal: signal,
       };
-      setState({
+      setState({...state,
         saveButtonDisabled: true,
         uploading: true,
         filename: [],
@@ -497,7 +495,7 @@ function Drag() {
                     : false;
                   if (FileStatus[batchIndex].status) {
                     uploadedFiles = [...uploadedFiles, ...queryData.fileData];
-                    setState({ fileCount: uploadedFiles.length }, () =>
+                    setState({...state, fileCount: uploadedFiles.length }, () =>
                       handleFileUpload(FileStatus, uploadedFiles)
                     );
                   }
@@ -513,7 +511,7 @@ function Drag() {
       );
 
       if (FileStatus.filter((item) => item.status).length == FileStatus.length)
-        setState({
+        setState({...state,
           filename: uploadedFiles.map((item, index) => {
             return { uploadedFilename: item, file: files[index] };
           }),
@@ -523,7 +521,7 @@ function Drag() {
           ),
         });
     } else {
-      setState({
+      setState({...state,
         fileErrorMsg: files && files.length ? "" : "A file or zip file is mandatory.",
         uploading: false,
         isFileUpload: false,
